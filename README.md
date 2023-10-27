@@ -75,11 +75,3 @@ A estrutura do projeto é a seguinte:
 ## Contribuições
 
 Contribuições são bem-vindas! Sinta-se à vontade para criar problemas, solicitações de pull ou propor melhorias para as aplicações React e Nest.
-
-## Licença
-
-Este projeto está licenciado sob a [Licença MIT](LICENSE).
-
----
-
-Você pode adaptar esse texto conforme necessário, incluindo detalhes adicionais sobre as aplicações React e Nest, como funcionalidades específicas, fluxo de trabalho e assim por diante.
