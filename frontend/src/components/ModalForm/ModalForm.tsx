@@ -68,7 +68,9 @@ export const ModalForm: React.FC<ModalProps> = ({
             console.log(userToSend)
             if (isEditing && selectedUser) {
                 // Atualiza os dados do usuário
-                await instance.put(`/usuarios/${selectedUser.id}`, user)
+
+                console.log(selectedUser)
+                await instance.put(`/usuarios/${selectedUser.id}`, userToSend)
             } else {
                 // Cria um novo usuário
                 await postUsers(userToSend)
@@ -86,6 +88,13 @@ export const ModalForm: React.FC<ModalProps> = ({
                 data
             )
             completedRequest(data)
+
+            setUser({
+                id: '',
+                nome: '',
+                email: '',
+                senha: ''
+            })
         } catch (error) {
             console.error('Erro ao cadastrar o usuário:', error)
 
@@ -117,7 +126,6 @@ export const ModalForm: React.FC<ModalProps> = ({
                     <div className='labels'>
                         <label>Nome</label>
                         <input
-                            required
                             type='text'
                             name='nome'
                             value={user.nome}
@@ -126,23 +134,27 @@ export const ModalForm: React.FC<ModalProps> = ({
                     </div>
                     <div className='min-label'>
                         <div className='labels'>
-                            <label>Email</label>
+                            <label>{isEditing ? 'Novo Email' : 'Email'}</label>
                             <input
                                 required
-                                type='text'
+                                type='email'
                                 name='email'
                                 value={user.email}
                                 onChange={handleChange}
+                                placeholder={isEditing ? 'Digite seu novo email' : 'Email'}
+                                autoComplete={isEditing ? 'off' : 'on'}
                             />
                         </div>
                         <div className='labels'>
-                            <label>Senha</label>
+                            <label>{isEditing ? 'Nova Senha' : 'Senha'}</label>
                             <input
                                 required
-                                type='text'
+                                type='password'
                                 name='senha'
                                 value={user.senha}
                                 onChange={handleChange}
+                                placeholder={isEditing ? 'Digite sua nova senha' : 'Senha'}
+                                autoComplete='off'
                             />
                         </div>
                     </div>
