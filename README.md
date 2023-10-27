@@ -38,7 +38,7 @@ A aplicação Nest é uma API que disponibiliza endpoints para manipular dados d
    npm run start
    ```
 
-A aplicação Nest estará disponível em `http://localhost:4000`.
+A aplicação Nest estará disponível em `http://localhost:3000`.
 
 ### Aplicação React
 
@@ -51,16 +51,16 @@ A aplicação Nest estará disponível em `http://localhost:4000`.
 2. Instale as dependências do projeto:
 
    ```bash
-   npm install
+   yarn install
    ```
 
 3. Inicie a aplicação React:
 
    ```bash
-   npm start
+   yarn dev
    ```
 
-A aplicação React estará disponível em `http://localhost:3000`.
+A aplicação React estará disponível em `http://localhost:5173`.
 
 Certifique-se de que as duas aplicações estejam em execução simultaneamente para aproveitar ao máximo a funcionalidade completa desta aplicação.
 
