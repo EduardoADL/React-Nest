@@ -77,4 +77,4 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker-compose up frontend
+          docker-compose push frontend
