@@ -65,16 +65,19 @@ jobs:
         run: |
           npm install -g yarn
           yarn install
+          
       - name: Login to Docker Hub
         run: |
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-
+          aws ecr get-login-password --region us-east-1 | docker login --username ${{ secrets.AWS_USER }} --password-stdin ${{ secrets.AWS_PASSWORD }}
+          
         working-directory: ./
       - name: Build Docker image
         run: |
-          docker-compose build frontend
-        
+          docker compose build frontend
 
-      - name: Push Docker image
+      - name: Version Docker image
+        run: docker tag frontend:latest 393724111068.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+
+      - name: Push Docker image AWS
         run: |
-          docker-compose push frontend
+          docker push 393724111068.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
