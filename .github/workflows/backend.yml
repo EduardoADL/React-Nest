@@ -65,4 +65,4 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker-compose up backend
+          docker-compose push backend
