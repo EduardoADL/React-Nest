@@ -17,7 +17,18 @@ export class UsuarioEntity{
     @CreateDateColumn({name: 'created_at'})
     createAt: string;
     @UpdateDateColumn({name: 'updated_at'})
-    update: string;
+    updateAt: string;
     @DeleteDateColumn({name : 'deleted_at'})
     deletedAt: string;
+
+
+    constructor(usuario?: Partial<UsuarioEntity>){
+        this.id = usuario?.id;
+        this.nome = usuario?.nome;
+        this.email = usuario?.email;
+        this.senha = usuario?.senha;
+        this.createAt = usuario?.createAt;
+        this.updateAt = usuario?.updateAt;
+        this.deletedAt = usuario?.deletedAt;
+    }
 }
