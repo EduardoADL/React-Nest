@@ -75,4 +75,4 @@ jobs:
       - name: publish kubernetes
         run: |
           aws eks update-kubeconfig --name naosim --region us-east-1
-          kubectl apply -f k8s/
+          kubectl apply -f ../k8s/
