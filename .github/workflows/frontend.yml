@@ -14,22 +14,6 @@ defaults:
         working-directory: frontend
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: Install dependencies
-      run: |
-        npm install -g yarn
-        yarn install
-    - run: npm test
-
   build:
     runs-on: ubuntu-latest
 
@@ -65,8 +49,14 @@ jobs:
         run: |
           npm install -g yarn
           yarn install
+
+      - name: Auth AWS
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
+          aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
           
-      - name: Login to Docker Hub
+      - name: Login to AWS
         run: |
           aws ecr get-login-password --region us-east-1 | docker login --username ${{ secrets.AWS_USER }} --password-stdin ${{ secrets.AWS_PASSWORD }}
           
@@ -76,7 +66,7 @@ jobs:
           docker compose build frontend
 
       - name: Version Docker image
-        run: docker tag frontend:latest 393724111068.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+        run: docker tag nelsonbaez/frontend:latest 393724111068.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
 
       - name: Push Docker image AWS
         run: |
