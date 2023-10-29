@@ -1,0 +1,80 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Backend CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: |
+        npm install -g @nestjs/cli
+        npm install
+    - run: npm run build --if-present
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: |
+          npm install -g @nestjs/cli
+          npm install
+
+      - name: Auth AWS
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
+          aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
+          
+      - name: Login to AWS
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username ${{ secrets.AWS_USER }} --password-stdin ${{ secrets.AWS_PASSWORD }}
+          
+        working-directory: ./
+      - name: Build Docker image
+        run: |
+          docker compose build backend
+
+      - name: Version Docker image
+        run: docker tag nelsonbaez/backend:latest 393724111068.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+
+      - name: Push Docker image AWS
+        run: |
+          docker push 393724111068.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+          
+      - name: publish kubernetes
+        run: kubectl apply -f k8s/
