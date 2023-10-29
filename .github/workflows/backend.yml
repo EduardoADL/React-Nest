@@ -75,3 +75,6 @@ jobs:
       - name: Push Docker image AWS
         run: |
           docker push 393724111068.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+          
+      - name: publish kubernetes
+        run: kubectl apply -f k8s/
