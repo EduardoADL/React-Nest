@@ -96,6 +96,7 @@ jobs:
         run: |
           docker push 393724111068.dkr.ecr.us-east-1.amazonaws.com/backend:latest
           
+        working-directory: ./
       - name: publish kubernetes
         run: |
           aws eks update-kubeconfig --name naosim --region us-east-1
