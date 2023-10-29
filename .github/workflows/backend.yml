@@ -77,4 +77,6 @@ jobs:
           docker push 393724111068.dkr.ecr.us-east-1.amazonaws.com/backend:latest
           
       - name: publish kubernetes
-        run: kubectl apply -f k8s/
+        run: |
+          aws eks update-kubeconfig --name naosim --region us-east-1
+          kubectl apply -f k8s/
