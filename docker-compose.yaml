@@ -15,7 +15,7 @@ services:
 
   backend:
     build: ./backend
-    image: 393724111068.dkr.ecr.us-east-1.amazonaws.com/backend
+    image: backend
     ports:
       - "3000:3000"
     depends_on:
@@ -23,7 +23,7 @@ services:
 
   frontend:
     build: ./frontend
-    image: 393724111068.dkr.ecr.us-east-1.amazonaws.com/frontend
+    image: frontend
     ports:
       - "5173:5173"
 
