@@ -70,13 +70,10 @@ jobs:
           docker compose build backend
 
       - name: Version Docker image
-        run: docker tag nelsonbaez/backend:latest 393724111068.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+        run: docker tag nelsonbaez/backend:latest 653877825205.dkr.ecr.us-east-1.amazonaws.com/backend
 
       - name: Push Docker image AWS
         run: |
-          docker push 393724111068.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+          docker push 653877825205.dkr.ecr.us-east-1.amazonaws.com/backend
           
-      - name: publish kubernetes
-        run: |
-          aws eks update-kubeconfig --name naosim --region us-east-1
-          kubectl apply -f k8s/
+      

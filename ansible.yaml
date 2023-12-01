@@ -1,0 +1,99 @@
+---
+- name: Deploy App
+  hosts: all
+  vars_files:
+    - env.yaml
+  tasks:
+    - name: Check if AWS CLI is already installed
+      ansible.builtin.stat:
+        path: /usr/local/bin/aws
+      register: aws_cli_installed
+
+
+    - name: Check if docker is already installed
+      ansible.builtin.stat:
+        path: /usr/local/bin/docker
+      register: docker_installed
+
+
+    - name: instala pacotes
+      apt:
+        name: ['unzip', 'ca-certificates', 'curl', 'gnupg', 'python3-pip', 'python3-setuptools']
+        state: latest
+      become: yes
+
+    - name: Download AWS CLI v2 zip file
+      get_url:
+        url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+        dest: "./awscliv2.zip"
+      when: not aws_cli_installed.stat.exists
+
+    - name: Unzip AWS CLI v2
+      ansible.builtin.unarchive:
+        src: "./awscliv2.zip"
+        dest: "./"
+        remote_src: yes
+      when: not aws_cli_installed.stat.exists
+
+    - name: Install AWS CLI v2
+      become: yes
+      command: "./aws/install"
+      when: not aws_cli_installed.stat.exists
+
+    - name: Add Docker GPG apt Key
+      become: yes
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+      when: not docker_installed.stat.exists
+
+    - name: Add Docker Repository
+      become: yes
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+      when: not docker_installed.stat.exists
+
+    - name: Update apt and install docker-ce
+      become: yes
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+      when: not docker_installed.stat.exists
+
+    - name: Install Docker Module for Python
+      become: yes
+      pip:
+        name: docker
+      when: not docker_installed.stat.exists
+
+    - name: permission docker
+      file: path=/var/run/docker.sock mode=666
+      become: yes
+
+
+    - name: config aws cli
+      command: aws configure set aws_access_key_id {{ AWS_ID }} 
+    - name: config aws cli
+      command: aws configure set aws_secret_access_key {{ AWS_ACCESS_KEY }} 
+    - name: config aws cli
+      command: aws configure set aws_session_token {{ AWS_SESSION_TOKEN }}
+
+
+    - name: Login to AWS
+      shell: "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 653877825205.dkr.ecr.us-east-1.amazonaws.com/frontend:latest"
+
+    - name: Pull from ECR
+      docker_image:
+        name: "653877825205.dkr.ecr.us-east-1.amazonaws.com/frontend:latest"
+        source: pull
+
+    - name: Run container
+      become: yes
+      docker_container:
+        name: frontend
+        image: "653877825205.dkr.ecr.us-east-1.amazonaws.com/frontend:latest"
+        state: started
+        restart_policy: always
+        network_mode: host

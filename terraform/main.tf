@@ -14,10 +14,18 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
+resource "aws_ecr_repository" "frontend" {
+  name = "frontend"
+}
+
+resource "aws_ecr_repository" "backend" {
+  name = "backend"
+}
+
 resource "aws_instance" "tcb_blog_ec2" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  key_name = "teste" # Insira o nome da chave criada antes.
+  key_name = "naosim" # Insira o nome da chave criada antes.
   subnet_id = var.tcb_blog_subnet_public_id
   vpc_security_group_ids = [aws_security_group.permitir_ssh_http.id]
   associate_public_ip_address = true
@@ -46,6 +54,14 @@ resource "aws_security_group" "permitir_ssh_http" {
     description = "HTTP to EC2"
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTP imagem do jean to EC2"
+    from_port   = 5173
+    to_port     = 5173
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
