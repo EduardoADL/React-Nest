@@ -106,7 +106,9 @@ jobs:
           docker push 098041652833.dkr.ecr.us-east-1.amazonaws.com/frontend
 
       - name: Ansible
-        run: ansible-playbook playbook.yml
+        run: |
+          cd ..
+          ansible-playbook playbook.yml
           
   destroy:
     needs: terraform
