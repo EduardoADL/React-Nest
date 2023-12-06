@@ -105,9 +105,16 @@ jobs:
         run: |
           docker push 098041652833.dkr.ecr.us-east-1.amazonaws.com/frontend
 
+      - name: Setup SSH
+        working-directory: ./
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa.pem
+          chmod 600 ~/.ssh/id_rsa.pem
+      
       - name: Ansible
         working-directory: ./
-        run: ansible-playbook -i hosts ansible.yaml -u ubuntu --private-key ${{ secrets.SSH_KEY }}
+        run: ansible-playbook -i hosts ansible.yaml -u ubuntu --private-key ~/.ssh/id_rsa.pem
         
           
   # destroy:
