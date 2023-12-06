@@ -99,7 +99,7 @@ jobs:
           docker compose build frontend
 
       - name: Version Docker image
-        run: docker tag nelsonbaez/frontend:latest 098041652833.dkr.ecr.us-east-1.amazonaws.com/frontend
+        run: docker tag frontend:latest 098041652833.dkr.ecr.us-east-1.amazonaws.com/frontend
 
       - name: Push Docker image AWS
         run: |
