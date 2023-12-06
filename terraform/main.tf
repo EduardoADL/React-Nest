@@ -76,4 +76,8 @@ resource "aws_security_group" "permitir_ssh_http" {
   tags = {
     Name = "permitir_ssh_e_http"
   }
+
+  output "ec2_public_dns" {
+    value = ["${aws_instance.tcb_blog_ec2.public_dns}"]
+  }
 }
