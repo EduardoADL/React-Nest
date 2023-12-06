@@ -82,18 +82,18 @@
 
 
     - name: Login to AWS
-      shell: "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 653877825205.dkr.ecr.us-east-1.amazonaws.com/frontend:latest"
+      shell: "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_PASSWORD }}"
 
     - name: Pull from ECR
       docker_image:
-        name: "653877825205.dkr.ecr.us-east-1.amazonaws.com/frontend:latest"
+        name: "${{ secrets.AWS_PASSWORD }}/frontend:latest"
         source: pull
 
     - name: Run container
       become: yes
       docker_container:
         name: frontend
-        image: "653877825205.dkr.ecr.us-east-1.amazonaws.com/frontend:latest"
+        image: "${{ secrets.AWS_PASSWORD }}/frontend:latest"
         state: started
         restart_policy: always
         network_mode: host

@@ -14,42 +14,42 @@ defaults:
         working-directory: frontend
 
 jobs:
-  terraform:
-    runs-on: ubuntu-latest
-    outputs:
-      id: terraform
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+  # terraform:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     id: terraform
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
+  #     - name: Set up Terraform
+  #       uses: hashicorp/setup-terraform@v1
 
-      - name: Auth AWS
-        run: |  
-          aws configure set aws_access_key_id ${{ secrets.AWS_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
-          aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
+  #     - name: Auth AWS
+  #       run: |  
+  #         aws configure set aws_access_key_id ${{ secrets.AWS_ID }}
+  #         aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
 
-      - name: Terraform Init
-        run: terraform init
-        working-directory: terraform
+  #     - name: Terraform Init
+  #       run: terraform init
+  #       working-directory: terraform
 
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: terraform
+  #     - name: Terraform Validate
+  #       run: terraform validate
+  #       working-directory: terraform
 
-      - name: Terraform Plan
-        id: terraform_plan
-        run: terraform plan -out=tfplan
-        working-directory: terraform
+  #     - name: Terraform Plan
+  #       id: terraform_plan
+  #       run: terraform plan -out=tfplan
+  #       working-directory: terraform
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
-        working-directory: terraform
+  #     - name: Terraform Apply
+  #       run: terraform apply -auto-approve tfplan
+  #       working-directory: terraform
   build:
     runs-on: ubuntu-latest
-    needs: terraform
+    # needs: terraform
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -99,22 +99,41 @@ jobs:
           docker compose build frontend
 
       - name: Version Docker image
-        run: docker tag nelsonbaez/frontend:latest 098041652833.dkr.ecr.us-east-1.amazonaws.com/frontend
+        run: docker tag frontend:latest 098041652833.dkr.ecr.us-east-1.amazonaws.com/frontend
 
       - name: Push Docker image AWS
         run: |
           docker push 098041652833.dkr.ecr.us-east-1.amazonaws.com/frontend
 
+      - name: Setup SSH
+        working-directory: ./
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa.pem
+          chmod 600 ~/.ssh/id_rsa.pem
+      
       - name: Ansible
-        run: ansible-playbook playbook.yml
+        working-directory: ./
+        run: ansible-playbook -i hosts ansible.yaml -u ubuntu --private-key ~/.ssh/id_rsa.pem
+        
           
-  destroy:
-    needs: terraform
-    runs-on: ubuntu-latest
-    if: failure() # Executar apenas se a etapa deploy falhar
-    steps:
-      - name: Set up Terraform for Destroy
-        uses: hashicorp/setup-terraform@v1
+  # destroy:
+  #   needs: terraform
+  #   runs-on: ubuntu-latest
+  #   if: failure() # Executar apenas se a etapa deploy falhar
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
+        
+  #     - name: Set up Terraform for Destroy
+  #       uses: hashicorp/setup-terraform@v1
+        
+  #     - name: Auth AWS
+  #       run: |
+  #         aws configure set aws_access_key_id ${{ secrets.AWS_ID }}
+  #         aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
 
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve
+  #     - name: Terraform Destroy
+  #       run: terraform destroy -auto-approve
+  #       working-directory: terraform
