@@ -107,7 +107,8 @@ jobs:
 
       - name: Ansible
         working-directory: ./
-        run: ansible-playbook ansible.yaml
+        run: ansible-playbook -i hosts ansible.yaml -u ubuntu --private-key ~/.ssh/id_rsa
+        
           
   # destroy:
   #   needs: terraform
