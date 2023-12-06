@@ -113,6 +113,9 @@ jobs:
     runs-on: ubuntu-latest
     if: failure() # Executar apenas se a etapa deploy falhar
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
       - name: Set up Terraform for Destroy
         uses: hashicorp/setup-terraform@v1
         
