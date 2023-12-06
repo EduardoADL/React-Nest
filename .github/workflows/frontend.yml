@@ -107,7 +107,7 @@ jobs:
 
       - name: Ansible
         working-directory: ./
-        run: ansible-playbook -i hosts ansible.yaml -u ubuntu --private-key ~/.ssh/id_rsa
+        run: ansible-playbook -i hosts ansible.yaml -u ubuntu --private-key ${{ secrets.SSH_KEY }}
         
           
   # destroy:
