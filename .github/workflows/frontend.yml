@@ -14,42 +14,42 @@ defaults:
         working-directory: frontend
 
 jobs:
-  terraform:
-    runs-on: ubuntu-latest
-    outputs:
-      id: terraform
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+  # terraform:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     id: terraform
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
+  #     - name: Set up Terraform
+  #       uses: hashicorp/setup-terraform@v1
 
-      - name: Auth AWS
-        run: |  
-          aws configure set aws_access_key_id ${{ secrets.AWS_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
-          aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
+  #     - name: Auth AWS
+  #       run: |  
+  #         aws configure set aws_access_key_id ${{ secrets.AWS_ID }}
+  #         aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
 
-      - name: Terraform Init
-        run: terraform init
-        working-directory: terraform
+  #     - name: Terraform Init
+  #       run: terraform init
+  #       working-directory: terraform
 
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: terraform
+  #     - name: Terraform Validate
+  #       run: terraform validate
+  #       working-directory: terraform
 
-      - name: Terraform Plan
-        id: terraform_plan
-        run: terraform plan -out=tfplan
-        working-directory: terraform
+  #     - name: Terraform Plan
+  #       id: terraform_plan
+  #       run: terraform plan -out=tfplan
+  #       working-directory: terraform
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
-        working-directory: terraform
+  #     - name: Terraform Apply
+  #       run: terraform apply -auto-approve tfplan
+  #       working-directory: terraform
   build:
     runs-on: ubuntu-latest
-    needs: terraform
+    # needs: terraform
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -107,25 +107,25 @@ jobs:
 
       - name: Ansible
         working-directory: ./
-        run: ansible-playbook playbook.yml
+        run: ansible-playbook ansible.yaml
           
-  destroy:
-    needs: terraform
-    runs-on: ubuntu-latest
-    if: failure() # Executar apenas se a etapa deploy falhar
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+  # destroy:
+  #   needs: terraform
+  #   runs-on: ubuntu-latest
+  #   if: failure() # Executar apenas se a etapa deploy falhar
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
         
-      - name: Set up Terraform for Destroy
-        uses: hashicorp/setup-terraform@v1
+  #     - name: Set up Terraform for Destroy
+  #       uses: hashicorp/setup-terraform@v1
         
-      - name: Auth AWS
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
-          aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
+  #     - name: Auth AWS
+  #       run: |
+  #         aws configure set aws_access_key_id ${{ secrets.AWS_ID }}
+  #         aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
 
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve
-        working-directory: terraform
+  #     - name: Terraform Destroy
+  #       run: terraform destroy -auto-approve
+  #       working-directory: terraform
