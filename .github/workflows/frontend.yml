@@ -101,16 +101,23 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa.pem
           chmod 600 ~/.ssh/id_rsa.pem
-      
-      - name: Ansible
+
+      - name: Apply Terraform
         id: terraform_output
-        working-directory: ./
         run: |
           INSTANCE_IP=$(terraform -chdir=terraform output -raw ec2_public_dns)
           echo "::set-output name=instance_ip::$INSTANCE_IP"
+        shell: bash
+
+      - name: Configure Ansible
+        run: |
           echo "[servidores]" > hosts
           echo "$INSTANCE_IP" >> hosts
           cat hosts
+        shell: bash
+  
+      - name: Run Ansible playbook
+        run: |
           ansible-playbook -i hosts ansible.yaml -u ubuntu --private-key ~/.ssh/id_rsa.pem
         shell: bash
         
