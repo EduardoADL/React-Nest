@@ -103,6 +103,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa.pem
 
       - name: Apply Terraform
+        working-directory: ./
         id: terraform_output
         run: |
           INSTANCE_IP=$(terraform -chdir=terraform output -raw ec2_public_dns)
@@ -110,6 +111,7 @@ jobs:
         shell: bash
 
       - name: Configure Ansible
+        working-directory: ./
         run: |
           echo "[servidores]" > hosts
           echo "$INSTANCE_IP" >> hosts
@@ -117,6 +119,7 @@ jobs:
         shell: bash
   
       - name: Run Ansible playbook
+        working-directory: ./
         run: |
           ansible-playbook -i hosts ansible.yaml -u ubuntu --private-key ~/.ssh/id_rsa.pem
         shell: bash
