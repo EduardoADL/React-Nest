@@ -103,7 +103,7 @@ jobs:
           INSTANCE_IP=$(terraform output -raw public_dns)
           echo "::set-output name=instance_ip::$INSTANCE_IP"
           echo "[servidores]" > hosts
-          echo "$INSTANCE_IP" >> ansible/inventario
+          echo "$INSTANCE_IP" >> hosts
           ansible-playbook -i hosts ansible.yaml -u ubuntu --private-key ~/.ssh/id_rsa.pem
         
           
