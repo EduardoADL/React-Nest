@@ -106,16 +106,18 @@ jobs:
         working-directory: ./
         id: terraform_output
         run: |
+          terraform -chdir=terraform output -raw ec2_public_dns
           INSTANCE_IP=$(terraform -chdir=terraform output -raw ec2_public_dns)
           echo "$INSTANCE_IP" > instance_ip.txt
+          cat instance_ip.txt
           echo "::set-output name=instance_ip::$INSTANCE_IP"
         shell: bash
-  
+
       - name: Configure Ansible
         working-directory: ./
         run: |
           echo "[servidores]" > hosts
-          cat instance_ip.txt >> hosts
+          echo instance_ip.txt >> hosts
           cat hosts
         shell: bash
   
