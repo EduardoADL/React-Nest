@@ -110,6 +110,7 @@ jobs:
           echo "::set-output name=instance_ip::$INSTANCE_IP"
           echo "[servidores]" > hosts
           echo "$INSTANCE_IP" >> hosts
+          cat hosts
           ansible-playbook -i hosts ansible.yaml -u ubuntu --private-key ~/.ssh/id_rsa.pem
         shell: bash
         
