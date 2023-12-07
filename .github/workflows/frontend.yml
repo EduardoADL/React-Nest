@@ -61,6 +61,11 @@ jobs:
         run: terraform init
         working-directory: terraform
 
+      - name: Destroy terraform
+        working-directory: ./
+        run: |
+          terraform destroy -auto-approve
+
       - name: Terraform Validate
         run: terraform validate
         working-directory: terraform
@@ -98,6 +103,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa.pem
       
       - name: Ansible
+        id: terraform_output
         working-directory: ./
         run: |
           INSTANCE_IP=$(terraform output -raw public_dns)
